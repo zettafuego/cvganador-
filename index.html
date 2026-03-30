@@ -682,13 +682,15 @@
       font-size: 0.8rem;
       line-height: 1.6;
       font-family: 'Courier New', monospace;
+      max-height: 300px; /* límite del contenedor */
     }
 
     .error-image {
-    max-width: 100%;   /* nunca más grande que el contenedor */
+    max-width: 90%;   /* nunca más grande que el contenedor */
     height: auto;      /* mantiene proporción */
     margin: 10px 0;
     border-radius: 6px; /* opcional, se ve más pro */
+    max-height: 120px; /* 👈 AQUÍ la domamos */
     }
     .error-popup .error-icon {
       font-size: 2rem;
