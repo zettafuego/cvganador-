@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎵 Eduardo Sánchez | Portfolio</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Monaco', 'Chicago', monospace;
+      background: linear-gradient(135deg, #ffd6e0 0%, #ffb3c6 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 20px;
+      gap: 20px;
+      flex-wrap: wrap;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* ============================================
+       NAME TOGGLE (TOP RIGHT)
+       ============================================ */
+    .name-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+
+    .name-switch {
+      background: #fff9f0;
+      border: 3px solid #000;
+      border-radius: 25px;
+      padding: 8px 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 4px 4px 0 rgba(0,0,0,0.2);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .name-switch:hover {
+      transform: translateY(-2px);
+      box-shadow: 6px 6px 0 rgba(0,0,0,0.2);
+    }
+
+    .name-label {
+      font-size: 0.75rem;
+      color: #666;
+    }
+
+    .name-display {
+      font-weight: bold;
+      font-size: 0.9rem;
+      color: #1a1a1a;
+      min-width: 120px;
+      text-align: center;
+    }
+
+    .name-display.zetta {
+      color: #ff9aa2;
+    }
+
+    .toggle-icon {
+      font-size: 1rem;
+      transition: transform 0.3s;
+    }
+
+    .toggle-icon.flipped {
+      transform: rotateY(180deg);
+    }
+
+    /* ============================================
+       MUSIC PLAYER (ORIGINAL DESIGN)
+       ============================================ */
+    .player-container {
+      background: #fff9f0;
+      border: 3px solid #000;
+      border-radius: 10px;
+      padding: 30px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 8px 8px 0 rgba(0,0,0,0.2);
+    }
+
+    .player-title {
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: #1a1a1a;
+    }
+
+    .album-art {
+      width: 200px;
+      height: 200px;
+      margin: 0 auto 20px;
+      background: linear-gradient(135deg, #6ec6ca, #ff9aa2);
+      border: 3px solid #000;
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 4rem;
+      animation: pulse 2s ease-in-out infinite;
+      overflow: hidden;
+    }
+
+    .album-art img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .album-art.playing { animation: spin 3s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    .track-info { text-align: center; margin-bottom: 20px; }
+    .track-title { font-size: 1.1rem; font-weight: bold; margin-bottom: 5px; }
+    .track-artist { font-size: 0.9rem; color: #666; }
+
+    .progress-bar {
+      background: #f5ebe0;
+      border: 2px solid #000;
+      border-radius: 6px;
+      height: 12px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      background: linear-gradient(90deg, #6ec6ca, #ff9aa2);
+      height: 100%;
+      width: 0%;
+      border-radius: 4px;
+      transition: width 0.1s linear;
+    }
+
+    .time-display {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .btn {
+      width: 45px;
+      height: 45px;
+      border: 2px solid #000;
+      border-radius: 50%;
+      background: #fff;
+      cursor: pointer;
+      font-size: 1.2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.2s;
+      box-shadow: 3px 3px 0 rgba(0,0,0,0.2);
+    }
+
+    .btn:hover {
+      background: #6ec6ca;
+      color: #fff;
+      transform: translateY(-2px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+    }
+
+    .btn-play {
+      width: 60px;
+      height: 60px;
+      font-size: 1.5rem;
+      background: #ff9aa2;
+    }
+
+    .btn-play:hover { background: #ffb7b2; }
+
+    .status {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 0.8rem;
+      color: #666;
+    }
+
+    .status.loading { color: #6ec6ca; }
+    .status.playing { color: #28c940; }
+    .status.error { color: #ff5f57; }
+
+    .volume-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 2px dashed #000;
+    }
+
+    .volume-slider {
+      flex: 1;
+      height: 8px;
+      -webkit-appearance: none;
+      background: #f5ebe0;
+      border: 2px solid #000;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      background: #6ec6ca;
+      border: 2px solid #000;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .visualizer {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 4px;
+      height: 40px;
+      margin-top: 15px;
+    }
+
+    .visualizer-bar {
+      width: 8px;
+      background: linear-gradient(to top, #6ec6ca, #ff9aa2);
+      border: 2px solid #000;
+      border-radius: 4px 4px 0 0;
+      transition: height 0.1s ease;
+    }
+
+    /* ============================================
+       WINDOWS-STYLE CV WINDOW
+       ============================================ */
+    .cv-window {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      width: 90%;
+      max-width: 700px;
+      max-height: 85vh;
+      background: #fff9f0;
+      border: 3px solid #000;
+      border-radius: 8px;
+      box-shadow: 15px 15px 0 rgba(0,0,0,0.3);
+      z-index: 999;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cv-window.open {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .window-header {
+      background: linear-gradient(90deg, #6ec6ca, #ff9aa2);
+      border-bottom: 3px solid #000;
+      padding: 10px 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: move;
+    }
+
+    .window-title {
+      font-weight: bold;
+      font-size: 0.9rem;
+      color: #1a1a1a;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .window-controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    .window-btn {
+      width: 28px;
+      height: 28px;
+      border: 2px solid #000;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: bold;
+      transition: all 0.2s;
+      background: #fff;
+    }
+
+    .window-btn.minimize:hover { background: #ffeb3b; }
+    .window-btn.maximize:hover { background: #4caf50; color: #fff; }
+    .window-btn.close:hover { background: #ff5f57; color: #fff; }
+
+    .window-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .window-content::-webkit-scrollbar {
+      width: 12px;
+    }
+
+    .window-content::-webkit-scrollbar-track {
+      background: #f5ebe0;
+      border: 2px solid #000;
+      border-radius: 6px;
+    }
+
+    .window-content::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #6ec6ca, #ff9aa2);
+      border: 2px solid #000;
+      border-radius: 6px;
+    }
+
+    /* CV Content Styles */
+    .cv-header {
+      text-align: center;
+      border-bottom: 3px solid #000;
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+    }
+
+    .cv-name {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #1a1a1a;
+    }
+
+    .cv-name.zetta-mode {
+      background: linear-gradient(90deg, #6ec6ca, #ff9aa2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .cv-role {
+      font-size: 0.9rem;
+      color: #666;
+      margin-top: 5px;
+    }
+
+    .cv-contact {
+      font-size: 0.75rem;
+      color: #888;
+      margin-top: 8px;
+    }
+
+    .cta-box {
+      background: linear-gradient(135deg, #6ec6ca, #ff9aa2);
+      border: 3px solid #000;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      margin: 20px 0;
+      box-shadow: 4px 4px 0 rgba(0,0,0,0.2);
+    }
+
+    .cta-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #1a1a1a;
+    }
+
+    .cta-subtitle {
+      font-size: 0.85rem;
+      color: #333;
+      margin-bottom: 15px;
+      font-style: italic;
+    }
+
+    .cta-btn {
+      background: #fff;
+      border: 2px solid #000;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      color: #1a1a1a;
+      display: inline-block;
+      font-size: 0.9rem;
+    }
+
+    .cta-btn:hover {
+      background: #ff9aa2;
+      transform: translateY(-2px);
+      box-shadow: 3px 3px 0 rgba(0,0,0,0.3);
+    }
+
+    .disclaimer {
+      font-size: 0.7rem;
+      color: #666;
+      margin-top: 12px;
+      font-style: italic;
+    }
+
+    .cv-section {
+      margin: 18px 0;
+    }
+
+    .cv-section-title {
+      font-size: 1rem;
+      font-weight: bold;
+      border-bottom: 2px solid #000;
+      padding-bottom: 5px;
+      margin-bottom: 10px;
+      color: #1a1a1a;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cv-list {
+      list-style: none;
+      font-size: 0.8rem;
+      color: #444;
+      line-height: 1.5;
+    }
+
+    .cv-list li {
+      padding: 4px 0;
+      padding-left: 15px;
+      position: relative;
+    }
+
+    .cv-list li::before {
+      content: "▸";
+      position: absolute;
+      left: 0;
+      color: #6ec6ca;
+      font-weight: bold;
+    }
+
+    .job-item {
+      margin-bottom: 15px;
+      padding-bottom: 12px;
+      border-bottom: 1px dashed #ccc;
+    }
+
+    .job-item:last-child {
+      border-bottom: none;
+    }
+
+    .job-title {
+      font-weight: bold;
+      font-size: 0.85rem;
+      color: #1a1a1a;
+    }
+
+    .job-company {
+      font-size: 0.78rem;
+      color: #666;
+    }
+
+    .job-date {
+      font-size: 0.7rem;
+      color: #888;
+      font-style: italic;
+    }
+
+    .skills-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .skill-tag {
+      background: #f5ebe0;
+      border: 2px solid #000;
+      border-radius: 15px;
+      padding: 4px 10px;
+      font-size: 0.7rem;
+      font-weight: bold;
+      color: #1a1a1a;
+    }
+
+    .skill-tag.highlight {
+      background: #6ec6ca;
+      color: #fff;
+    }
+
+    .skill-tag.zetta {
+      background: #ff9aa2;
+      color: #fff;
+    }
+
+    .cert-badge {
+      display: inline-block;
+      background: #fff;
+      border: 2px solid #000;
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-size: 0.65rem;
+      margin: 2px;
+      font-weight: bold;
+    }
+
+    .contact-info {
+      font-size: 0.75rem;
+      color: #555;
+      text-align: center;
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 2px dashed #000;
+      line-height: 1.6;
+    }
+
+    /* Open CV Button */
+    .open-cv-btn {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: #fff9f0;
+      border: 3px solid #000;
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 4px 4px 0 rgba(0,0,0,0.2);
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 100;
+    }
+
+    .open-cv-btn:hover {
+      background: #6ec6ca;
+      color: #fff;
+      transform: translateY(-2px);
+    }
+
+    /* Overlay */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.4);
+      z-index: 998;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s;
+    }
+
+    .overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Zetta Mode Specific Styles */
+    .cv-window.zetta-theme .window-header {
+      background: linear-gradient(90deg, #ff9aa2, #6ec6ca);
+    }
+
+    .cv-window.zetta-theme .cv-section-title {
+      color: #ff9aa2;
+    }
+
+    .cv-window.zetta-theme .cv-list li::before {
+      color: #ff9aa2;
+    }
+
+    .art-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    .art-divider::before,
+    .art-divider::after {
+      content: "";
+      flex: 1;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #6ec6ca, transparent);
+    }
+
+    .art-icon {
+      font-size: 1.2rem;
+    }
+
+    /* ============================================
+       ERROR POPUP WINDOWS (TERMINAL STYLE)
+       ============================================ */
+    .error-popup {
+      position: fixed;
+      background: #000;
+      border: 3px solid #00ff00;
+      border-radius: 4px;
+      padding: 20px;
+      min-width: 350px;
+      max-width: 500px;
+      z-index: 2000;
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.3), 10px 10px 0 rgba(0,0,0,0.5);
+      display: none;
+      opacity: 0;
+      transform: scale(0.8);
+      transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    .error-popup.show {
+      display: block;
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .error-popup .error-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #00ff00;
+    }
+
+    .error-popup .error-title {
+      color: #00ff00;
+      font-size: 0.85rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .error-popup .error-close {
+      color: #00ff00;
+      cursor: pointer;
+      font-size: 1.2rem;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+
+    .error-popup .error-close:hover {
+      color: #ff0000;
+    }
+
+    .error-popup .error-content {
+      color: #00ff00;
+      font-size: 0.8rem;
+      line-height: 1.6;
+      font-family: 'Courier New', monospace;
+    }
+
+    .error-popup .error-icon {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    .error-popup .error-code {
+      margin-top: 15px;
+      padding-top: 10px;
+      border-top: 1px dashed #00ff00;
+      font-size: 0.7rem;
+      color: #00aa00;
+    }
+
+    .error-popup .blink-cursor {
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+
+    /* Syntax Error Popup Specific */
+    .syntax-error {
+      background: #0a0a0a;
+      border-color: #ff00ff;
+    }
+
+    .syntax-error .error-header {
+      border-bottom-color: #ff00ff;
+    }
+
+    .syntax-error .error-title,
+    .syntax-error .error-close,
+    .syntax-error .error-content {
+      color: #ff00ff;
+    }
+
+    .syntax-error .error-code {
+      border-top-color: #ff00ff;
+      color: #aa00aa;
+    }
+
+    /* Blue Screen Style */
+    .bsod-popup {
+      background: #0000aa;
+      border: 3px solid #fff;
+    }
+
+    .bsod-popup .error-header {
+      border-bottom-color: #fff;
+    }
+
+    .bsod-popup .error-title,
+    .bsod-popup .error-close,
+    .bsod-popup .error-content {
+      color: #fff;
+    }
+
+    .bsod-popup .error-code {
+      border-top-color: #fff;
+      color: #aaa;
+    }
+
+    /* Responsive */
+    @media (max-width: 750px) {
+      .cv-window {
+        width: 95%;
+        max-height: 90vh;
+      }
+      .name-toggle {
+        top: 10px;
+        right: 10px;
+      }
+      .open-cv-btn {
+        bottom: 10px;
+        left: 10px;
+        padding: 10px 15px;
+        font-size: 0.85rem;
+      }
+      .error-popup {
+        min-width: 280px;
+        max-width: 90vw;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================
+       NAME TOGGLE (TOP RIGHT)
+       ============================================ -->
+  <div class="name-toggle">
+    <div class="name-switch" onclick="toggleName()">
+      <span class="name-label">👤</span>
+      <span class="name-display" id="nameDisplay">Eduardo Sanchez</span>
+      <span class="toggle-icon" id="toggleIcon">🔄</span>
+    </div>
+  </div>
+
+  <!-- ============================================
+       MUSIC PLAYER (LEFT SIDE - ORIGINAL DESIGN)
+       ============================================ -->
+  <div class="player-container">
+    <div class="player-title">🎵 INTENTA DETENERME</div>
+    
+    <div class="album-art" id="albumArt">
+      <img src="arte.png" alt="Album Art" id="cdImage">
+    </div>
+    
+    <div class="track-info">
+      <div class="track-title" id="trackTitle">Cargando...</div>
+      <div class="track-artist" id="trackArtist">Verificando conexión</div>
+    </div>
+    
+    <div class="progress-bar" id="progressBar" onclick="seek(event)">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    
+    <div class="time-display">
+      <span id="currentTime">0:00</span>
+      <span id="totalTime">0:00</span>
+    </div>
+    
+    <div class="controls">
+      <button class="btn" onclick="previousTrack()">⏮️</button>
+      <button class="btn btn-play" id="playBtn" onclick="togglePlay()">▶️</button>
+      <button class="btn" onclick="nextTrack()">⏭️</button>
+    </div>
+    
+    <div class="visualizer" id="visualizer">
+      <div class="visualizer-bar" style="height: 40%;"></div>
+      <div class="visualizer-bar" style="height: 70%;"></div>
+      <div class="visualizer-bar" style="height: 50%;"></div>
+      <div class="visualizer-bar" style="height: 85%;"></div>
+      <div class="visualizer-bar" style="height: 60%;"></div>
+    </div>
+    
+    <div class="volume-control">
+      <span>🔊</span>
+      <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="80">
+    </div>
+    
+    <div class="status" id="status">Click en Play para iniciar</div>
+  </div>
+
+  <!-- ============================================
+       OPEN CV BUTTON
+       ============================================ -->
+  <button class="open-cv-btn" onclick="openCV()">
+    📄 Ver mi CV
+  </button>
+
+  <!-- ============================================
+       OVERLAY
+       ============================================ -->
+  <div class="overlay" id="overlay" onclick="closeCV()"></div>
+
+  <!-- ============================================
+       WINDOWS-STYLE CV WINDOW
+       ============================================ -->
+  <div class="cv-window" id="cvWindow">
+    <div class="window-header">
+      <div class="window-title">
+        📁 <span id="windowNameTitle">Eduardo Sanchez</span> - <span id="windowSubtitle">Curriculum Vitae</span>
+      </div>
+      <div class="window-controls">
+        <div class="window-btn minimize" onclick="minimizeCV()">─</div>
+        <div class="window-btn maximize" onclick="maximizeCV()">□</div>
+        <div class="window-btn close" onclick="closeCV()">✕</div>
+      </div>
+    </div>
+    <div class="window-content" id="cvContent">
+      
+      <!-- EDUARDO SANCHEZ MODE -->
+      <div id="eduardoContent">
+        <div class="cv-header">
+          <div class="cv-name">Eduardo Yampier Sánchez Cotrina</div>
+          <div class="cv-role">Supervisor SSOMA | Ing. de Minas | Tech Enthusiast 🚀</div>
+          <div class="cv-contact">📍 Lima, Perú | 📞 977 740 994 | ✉️ eduardoxstrange@gmail.com</div>
+        </div>
+
+        <div class="cta-box">
+          <div class="cta-title">🔓 CONTRÁTAME PARA DESBLOQUEAR MI TALENTO</div>
+          <div class="cta-subtitle">"Puede ser que me aburra y renuncie... ja, es lo que hay 😅"</div>
+          <a href="mailto:eduardoxstrange@gmail.com" class="cta-btn">💌 Enviarme un correo</a>
+          <div class="disclaimer">* No me hago responsable por risas incontrolables durante la entrevista.</div>
+        </div>
+
+        <div class="cv-section">
+          <div class="cv-section-title">🛠️ Habilidades Técnicas</div>
+          <div class="skills-container">
+            <span class="skill-tag highlight">Python</span>
+            <span class="skill-tag highlight">JavaScript</span>
+            <span class="skill-tag highlight">Kotlin</span>
+            <span class="skill-tag">Pandas</span>
+            <span class="skill-tag">OpenCV</span>
+            <span class="skill-tag">Power BI</span>
+            <span class="skill-tag">Looker Studio</span>
+            <span class="skill-tag">SIG</span>
+            <span class="skill-tag">ISO 9001/14001/45001</span>
+            <span class="skill-tag">Scrum</span>
+            <span class="skill-tag">Unity</span>
+            <span class="skill-tag">Blender</span>
+          </div>
+        </div>
+
+        <div class="cv-section">
+          <div class="cv-section-title">💼 Experiencia Profesional</div>
+          
+          <div class="job-item">
+            <div class="job-title">Coordinador Técnico (SSOMA y Permisología)</div>
+            <div class="job-company">Sinba Sura S.A.C. – Lima, Perú</div>
+            <div class="job-date">Dic 2025 – Actualidad</div>
+            <ul class="cv-list">
+              <li>Gestión SSOMA en operaciones de residuos sólidos y biofábrica</li>
+              <li>Permisos críticos ante PRODUCE, MINAM y Municipalidad de Lima</li>
+              <li>Dashboards gerenciales reduciendo tiempos en 35%</li>
+            </ul>
+          </div>
+
+          <div class="job-item">
+            <div class="job-title">Supervisor SSOMA Mantenimiento</div>
+            <div class="job-company">National Facilities S.A.C.</div>
+            <div class="job-date">Mar 2025 – Jun 2025</div>
+            <ul class="cv-list">
+              <li>Seguridad en mantenimiento de electromecánica, HVAC, SCI</li>
+              <li>Sedes: Parque Arauco, Plaza Vea, Divemotor, Mitsui, BMV</li>
+            </ul>
+          </div>
+
+          <div class="job-item">
+            <div class="job-title">Coordinador de Innovación y Desarrollo Tecnológico</div>
+            <div class="job-company">Waffles Tech – Remoto</div>
+            <div class="job-date">Jun 2024 – Actualidad</div>
+            <ul class="cv-list">
+              <li>Desarrollo de videojuegos con Unity y Blender</li>
+              <li>Metodologías ágiles Scrum, gestión ISO 9001</li>
+            </ul>
+          </div>
+
+          <div class="job-item">
+            <div class="job-title">Supervisor SSOMA/Administrativo</div>
+            <div class="job-company">Sociedad Minera Camila 2008</div>
+            <div class="job-date">Nov 2022 – Nov 2023</div>
+            <ul class="cv-list">
+              <li>2 años en minería subterránea</li>
+              <li>Gestión de activos de explosivos (Matpel)</li>
+            </ul>
+          </div>
+
+          <div class="job-item">
+            <div class="job-title">Supervisor de Desmontaje/SSOMA</div>
+            <div class="job-company">American Real Estate SAC</div>
+            <div class="job-date">Oct 2020 – Nov 2022</div>
+            <ul class="cv-list">
+              <li>Desmontaje de instalaciones de flotación de Cu, Zn, Pb</li>
+              <li>Gestión de tratamiento de aguas ácidas (DAM)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="cv-section">
+          <div class="cv-section-title">🎓 Formación Académica</div>
+          <ul class="cv-list">
+            <li><strong>Maestría</strong> en Gestión de Conflictos Socioambientales – UNC</li>
+            <li><strong>Bachiller</strong> en Ingeniería de Minas – Universidad Nacional de Cajamarca (2021)</li>
+            <li><strong>Diplomado</strong> en SSOMA – EGED / ENCAP</li>
+            <li><strong>Computación Científica</strong> – UNMSM (6to ciclo)</li>
+            <li><strong>Egresado</strong> en Bellas Artes, Artista Plástico – ESFAMU (2020)</li>
+          </ul>
+        </div>
+
+        <div class="cv-section">
+          <div class="cv-section-title">📜 Certificaciones</div>
+          <div style="margin-top: 8px;">
+            <span class="cert-badge">⚠️ Prevencionista de Riesgos</span>
+            <span class="cert-badge">⚡ Riesgos Eléctricos</span>
+            <span class="cert-badge">🪜 Trabajos en Altura</span>
+            <span class="cert-badge">🔒 Espacios Confinados</span>
+            <span class="cert-badge">🚑 Primeros Auxilios Psicológicos</span>
+            <span class="cert-badge">📋 ISO 45001</span>
+            <span class="cert-badge">🔥 Trabajos en Caliente</span>
+          </div>
+        </div>
+
+        <div class="cv-section">
+          <div class="cv-section-title">👥 Referencias Laborales</div>
+          <ul class="cv-list">
+            <li><strong>Ing. Piero Perriggo</strong> – Gerente de Operaciones, Sinba Sura SAC | 📞 981 388 149</li>
+            <li><strong>Ing. Victor Chumpitazi</strong> – Jefe SSOMA, Corporación Metal Frío | 📞 906 477 331</li>
+            <li><strong>Mg. Ing. Danny Valderrama</strong> – Gerente General, DrillRock EIRL | 📞 989 103 532</li>
+            <li><strong>Stephanie Vente Huaccha</strong> – RRHH, Sociedad Minera Camila 2008 | 📞 970 227 431</li>
+          </ul>
+        </div>
+
+        <div class="contact-info">
+          <strong>📧 eduardoxstrange@gmail.com</strong><br>
+          <strong>📱 977 740 994</strong><br>
+          <strong>📍 Jr. Tellería 1365 Dpto. 101, Cercado de Lima</strong><br>
+          <small>🔗 Disponible para proyectos remotos o presenciales</small><br>
+          <small>🎨 Artista plástico + ⛏️ Ingeniero + 💻 Programador</small>
+        </div>
+      </div>
+
+      <!-- ZETTAFUEGO MODE -->
+      <div id="zettaContent" style="display: none;">
+        <div class="cv-header">
+          <div class="cv-name zetta-mode">🔥 ZETTAFUEGO</div>
+          <div class="cv-role">Artista Visual | Tatuador | Grafitero | Escultor 🎨</div>
+          <div class="cv-contact">📍 Lima, Perú | 📞 977 740 994 | ✉️ eduardoxstrange@gmail.com</div>
+        </div>
+
+        <div class="cta-box">
+          <div class="cta-title">🎨 ARTE QUE QUEMA EN LA PIEL Y EN EL ALMA</div>
+          <div class="cta-subtitle">"Dibujo desde mis vidas pasadas. El arte no se aprende, se recuerda." 🔥</div>
+          <a href="mailto:eduardoxstrange@gmail.com" class="cta-btn">📩 Cotizar mi arte</a>
+          <div class="disclaimer">* Cada pieza es única como tu energía. No hago copias, solo creaciones.</div>
+        </div>
+
+        <div class="art-divider">
+          <span class="art-icon">🖤</span>
+          <span class="art-icon">💀</span>
+          <span class="art-icon">🔥</span>
+        </div>
+
+        <div class="cv-section">
+          <div class="cv-section-title">🎨 Habilidades Artísticas</div>
+          <div class="skills-container">
+            <span class="skill-tag zetta">Tattoo 10 años</span>
+            <span class="skill-tag zetta">Graffiti</span>
+            <span class="skill-tag zetta">Escultura</span>
+            <span class="skill-tag">Pintura Óleo</span>
+            <span class="skill-tag">Acuarela</span>
+            <span class="skill-tag">Ilustración Digital</span>
+            <span class="skill-tag">Blender 3D</span>
+            <span class="skill-tag">Unity</span>
+            <span class="skill-tag">Diseño de Personajes</span>
+            <span class="skill-tag">Muralismo</span>
+          </div>
+        </div>
+
+        <div class="cv-section">
+          <div class="cv-section-title">🔥 Sobre ZettaFuego</div>
+          <div style="background: #f5ebe0; border: 2px solid #000; border-radius: 8px; padding: 15px; margin-top: 10px;">
+            <p style="font-size: 0.85rem; color: #444; line-height: 1.6; margin-bottom: 10px;">
+              <strong>10 años tatuando</strong> almas que buscan marcar su camino en la piel. Cada línea es una historia, cada sombra un recuerdo, cada color una emoción que perdura.
+            </p>
+            <p style="font-size: 0.85rem; color: #444; line-height: 1.6; margin-bottom: 10px;">
+              <strong>Dibujo desde mis vidas pasadas.</strong> No aprendí a dibujar, siempre supe hacerlo. Mis manos solo recuerdan lo que mi alma ya creó antes.
+            </p>
+            <p style="font-size: 0.85rem; color: #444; line-height: 1.6;">
+              <strong>Graffiti y escultura</strong> son mis formas de dejar huella en el mundo físico. Lo efímero del street art y lo permanente de la escultura. Dos caras de la misma moneda.
+            </p>
+          </div>
+        </div>
+
+        <div class="art-divider">
+          <span class="art-icon">🎭</span>
+          <span class="art-icon">🖌️</span>
+          <span class="art-icon">⚡</span>
+        </div>
+
+        <div class="cv-section">
+          <div class="cv-section-title">🎓 Formación Artística</div>
+          <ul class="cv-list">
+            <li><strong>Egresado</strong> en Bellas Artes, Artista Plástico con mención en Pintura – ESFAMU (2020)</li>
+            <li><strong>Autodidacta</strong> en Tatuaje (10 años de experiencia práctica)</li>
+            <li><strong>Talleres</strong> de Graffiti y Street Art – Lima Underground</li>
+            <li><strong>Especialización</strong> en Escultura Contemporánea – Taller Libre</li>
+            <li><strong>Diplomado</strong> en Ilustración Digital y Concept Art</li>
+          </ul>
+        </div>
+
+        <div class="cv-section">
+          <div class="cv-section-title">🖤 Servicios</div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 10px;">
+            <div style="background: #fff; border: 2px solid #000; border-radius: 8px; padding: 12px; text-align: center;">
+              <div style="font-size: 1.5rem; margin-bottom: 5px;">🖋️</div>
+              <div style="font-size: 0.75rem; font-weight: bold;">TATTOO</div>
+              <div style="font-size: 0.65rem; color: #666;">Realismo, Blackwork, Trash Polka</div>
+            </div>
+            <div style="background: #fff; border: 2px solid #000; border-radius: 8px; padding: 12px; text-align: center;">
+              <div style="font-size: 1.5rem; margin-bottom: 5px;">🎨</div>
+              <div style="font-size: 0.75rem; font-weight: bold;">GRAFFITI</div>
+              <div style="font-size: 0.65rem; color: #666;">Murales, Piezas, Bombs</div>
+            </div>
+            <div style="background: #fff; border: 2px solid #000; border-radius: 8px; padding: 12px; text-align: center;">
+              <div style="font-size: 1.5rem; margin-bottom: 5px;">🗿</div>
+              <div style="font-size: 0.75rem; font-weight: bold;">ESCULTURA</div>
+              <div style="font-size: 0.65rem; color: #666;">Resina, Arcilla, Metal</div>
+            </div>
+            <div style="background: #fff; border: 2px solid #000; border-radius: 8px; padding: 12px; text-align: center;">
+              <div style="font-size: 1.5rem; margin-bottom: 5px;">🖼️</div>
+              <div style="font-size: 0.75rem; font-weight: bold;">PINTURA</div>
+              <div style="font-size: 0.65rem; color: #666;">Óleo, Acuarela, Mixto</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cv-section">
+          <div class="cv-section-title">🏆 Proyectos Destacados</div>
+          <ul class="cv-list">
+            <li><strong>Mural "Fuego Interior"</strong> – Centro Cultural Lima (2023)</li>
+            <li><strong>Exposición "Vidas Pasadas"</strong> – Galería ESFAMU (2020)</li>
+            <li><strong>Escultura "Metamorfosis"</strong> – Concurso Nacional de Arte (2022)</li>
+            <li><strong>Colaboración Waffles Tech</strong> – Diseño de personajes para videojuegos (2024)</li>
+          </ul>
+        </div>
+
+        <div class="art-divider">
+          <span class="art-icon">🌙</span>
+          <span class="art-icon">⭐</span>
+          <span class="art-icon">🌟</span>
+        </div>
+
+        <div class="contact-info">
+          <strong>📧 eduardoxstrange@gmail.com</strong><br>
+          <strong>📱 977 740 994</strong><br>
+          <strong>📍 Jr. Tellería 1365 Dpto. 101, Cercado de Lima</strong><br>
+          <small>🔥 Disponible para sesiones de tattoo, murales y comisiones</small><br>
+          <small>🎨 "El arte es el fuego que quema sin consumir"</small>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================
+       ERROR POPUP WINDOWS
+       ============================================ -->
+  
+  <!-- Error 1: Invalid Operation -->
+  <div class="error-popup" id="errorPopup1">
+    <div class="error-header">
+      <div class="error-title">⚠️ SYSTEM ERROR</div>
+      <div class="error-close" onclick="closeError('errorPopup1')">✕</div>
+    </div>
+    <div class="error-content">
+      <div class="error-icon">💀</div>
+      <p>Este programa ha efectuado una operación no válida y se cerrará.</p>
+      <p style="margin-top: 10px;">Si el problema persiste, consulte con su proveedor.</p>
+      <div class="error-code">
+        ERROR_CODE: 0x00000000<span class="blink-cursor">_</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error 2: Syntax Error -->
+  <div class="error-popup syntax-error" id="errorPopup2">
+    <div class="error-header">
+      <div class="error-title">⛔ SYNTAX ERROR</div>
+      <div class="error-close" onclick="closeError('errorPopup2')">✕</div>
+    </div>
+    <div class="error-content">
+      <div class="error-icon">🔴</div>
+      <p>SYNTAX ERROR AT LINE 0x4F2A</p>
+      <p style="margin-top: 10px;">Unexpected token in expression.</p>
+      <div class="error-code">
+        FILE: system32/drivers/etc/hosts<span class="blink-cursor">█</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error 3: Blue Screen -->
+  <div class="error-popup bsod-popup" id="errorPopup3">
+    <div class="error-header">
+      <div class="error-title">🖥️ FATAL ERROR</div>
+      <div class="error-close" onclick="closeError('errorPopup3')">✕</div>
+    </div>
+    <div class="error-content">
+      <div class="error-icon">☠️</div>
+      <p>A problem has been detected and Windows has been shut down.</p>
+      <p style="margin-top: 10px;">CRITICAL_PROCESS_DIED</p>
+      <div class="error-code">
+        Technical Information: *** STOP: 0x0000006F<span class="blink-cursor">▮</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Elemento de audio oculto -->
+  <audio id="audioPlayer" preload="auto" crossorigin="anonymous"></audio>
+
+  <script>
+    // ============================================
+    // NAME TOGGLE FUNCTIONALITY
+    // ============================================
+    let isZettaMode = false;
+
+    function toggleName() {
+      isZettaMode = !isZettaMode;
+      const nameDisplay = document.getElementById('nameDisplay');
+      const toggleIcon = document.getElementById('toggleIcon');
+      const windowNameTitle = document.getElementById('windowNameTitle');
+      const windowSubtitle = document.getElementById('windowSubtitle');
+      const cvWindow = document.getElementById('cvWindow');
+      const eduardoContent = document.getElementById('eduardoContent');
+      const zettaContent = document.getElementById('zettaContent');
+
+      if (isZettaMode) {
+        nameDisplay.textContent = 'ZettaFuego 🔥';
+        nameDisplay.classList.add('zetta');
+        windowNameTitle.textContent = 'ZettaFuego';
+        windowSubtitle.textContent = 'Portfolio Artístico';
+        cvWindow.classList.add('zetta-theme');
+        eduardoContent.style.display = 'none';
+        zettaContent.style.display = 'block';
+      } else {
+        nameDisplay.textContent = 'Eduardo Sanchez';
+        nameDisplay.classList.remove('zetta');
+        windowNameTitle.textContent = 'Eduardo Sanchez';
+        windowSubtitle.textContent = 'Curriculum Vitae';
+        cvWindow.classList.remove('zetta-theme');
+        eduardoContent.style.display = 'block';
+        zettaContent.style.display = 'none';
+      }
+
+      toggleIcon.classList.toggle('flipped');
+    }
+
+    // ============================================
+    // CV WINDOW FUNCTIONALITY
+    // ============================================
+    function openCV() {
+      document.getElementById('cvWindow').classList.add('open');
+      document.getElementById('overlay').classList.add('active');
+    }
+
+    function closeCV() {
+      document.getElementById('cvWindow').classList.remove('open');
+      document.getElementById('overlay').classList.remove('active');
+    }
+
+    function minimizeCV() {
+      document.getElementById('cvWindow').classList.remove('open');
+      document.getElementById('overlay').classList.remove('active');
+    }
+
+    function maximizeCV() {
+      const cvWindow = document.getElementById('cvWindow');
+      cvWindow.style.width = '95%';
+      cvWindow.style.maxHeight = '95vh';
+    }
+
+    // ============================================
+    // ERROR POPUP FUNCTIONALITY
+    // ============================================
+    function showError(popupId) {
+      const popup = document.getElementById(popupId);
+      const randomX = Math.random() * (window.innerWidth - 400);
+      const randomY = Math.random() * (window.innerHeight - 300);
+      
+      popup.style.left = randomX + 'px';
+      popup.style.top = randomY + 'px';
+      popup.classList.add('show');
+      
+      // Auto close after 5-8 seconds
+      setTimeout(() => {
+        closeError(popupId);
+      }, 5000 + Math.random() * 3000);
+    }
+
+    function closeError(popupId) {
+      document.getElementById(popupId).classList.remove('show');
+    }
+
+    // Random error popups
+    function scheduleRandomError() {
+      const errors = ['errorPopup1', 'errorPopup2', 'errorPopup3'];
+      const randomError = errors[Math.floor(Math.random() * errors.length)];
+      const randomTime = 10000 + Math.random() * 20000; // 10-30 seconds
+      
+      setTimeout(() => {
+        showError(randomError);
+        scheduleRandomError();
+      }, randomTime);
+    }
+
+    // Start random errors after page load
+    setTimeout(scheduleRandomError, 5000);
+
+    // ============================================
+    // DRAGGABLE WINDOW
+    // ============================================
+    let isDragging = false;
+    let startX, startY, initialLeft, initialTop;
+
+    document.querySelector('.window-header').addEventListener('mousedown', (e) => {
+      isDragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      
+      const cvWindow = document.getElementById('cvWindow');
+      const rect = cvWindow.getBoundingClientRect();
+      initialLeft = rect.left;
+      initialTop = rect.top;
+      
+      cvWindow.style.transform = 'none';
+      cvWindow.style.left = initialLeft + 'px';
+      cvWindow.style.top = initialTop + 'px';
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      
+      const cvWindow = document.getElementById('cvWindow');
+      cvWindow.style.left = (initialLeft + dx) + 'px';
+      cvWindow.style.top = (initialTop + dy) + 'px';
+    });
+
+    document.addEventListener('mouseup', () => {
+      isDragging = false;
+    });
+
+    // ============================================
+    // MUSIC PLAYER FUNCTIONALITY
+    // ============================================
+    const tracks = [
+      {
+        title: 'YO Resuelvo Jefe nomás dejeme llorar en el baño.mp3',
+        artist: 'Adicto a la CHAMBA',
+        src: '3.mp3'
+      },
+      {
+        title: 'ESTOY BIEN . MP3',
+        artist: 'Sigo sin entender el sentido de todo esto, pero amo los colores al amanecer',
+        src: '2.mp3'
+      },
+      {
+        title: 'La vida es un carrucel.mp3',
+        artist: 'Los primeros 50 años de infancia son los más dificiles',
+        src: '1.mp3'
+      }
+    ];
+
+    const audio = document.getElementById('audioPlayer');
+    const playBtn = document.getElementById('playBtn');
+    const albumArt = document.getElementById('albumArt');
+    const progressFill = document.getElementById('progressFill');
+    const currentTimeEl = document.getElementById('currentTime');
+    const totalTimeEl = document.getElementById('totalTime');
+    const statusEl = document.getElementById('status');
+    const volumeSlider = document.getElementById('volumeSlider');
+    const visualizerBars = document.querySelectorAll('.visualizer-bar');
+
+    let isPlaying = false;
+    let currentTrack = 0;
+    let visualizerInterval = null;
+
+    loadTrack(0);
+
+    function loadTrack(index) {
+      const track = tracks[index];
+      statusEl.textContent = '⏳ Cargando...';
+      statusEl.className = 'status loading';
+      document.getElementById('trackTitle').textContent = track.title;
+      document.getElementById('trackArtist').textContent = track.artist;
+      audio.src = track.src;
+      audio.load();
+    }
+
+    function togglePlay() {
+      if (isPlaying) {
+        audio.pause();
+      } else {
+        audio.play().then(() => {
+          statusEl.textContent = '🎵 Reproduciendo';
+          statusEl.className = 'status playing';
+        }).catch(error => {
+          console.error('Error:', error);
+          statusEl.textContent = '❌ Error: Click primero en la página';
+          statusEl.className = 'status error';
+        });
+      }
+    }
+
+    function previousTrack() {
+      currentTrack = (currentTrack - 1 + tracks.length) % tracks.length;
+      loadTrack(currentTrack);
+      if (isPlaying) setTimeout(() => audio.play(), 100);
+    }
+
+    function nextTrack() {
+      currentTrack = (currentTrack + 1) % tracks.length;
+      loadTrack(currentTrack);
+      if (isPlaying) setTimeout(() => audio.play(), 100);
+    }
+
+    function seek(event) {
+      const rect = event.target.getBoundingClientRect();
+      const percentage = ((event.clientX - rect.left) / rect.width) * 100;
+      audio.currentTime = (percentage / 100) * audio.duration;
+    }
+
+    function formatTime(seconds) {
+      if (isNaN(seconds)) return '0:00';
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    audio.addEventListener('play', () => {
+      isPlaying = true;
+      playBtn.textContent = '⏸️';
+      albumArt.classList.add('playing');
+      startVisualizer();
+    });
+
+    audio.addEventListener('pause', () => {
+      isPlaying = false;
+      playBtn.textContent = '▶️';
+      albumArt.classList.remove('playing');
+      stopVisualizer();
+      statusEl.textContent = '⏸️ Pausado';
+      statusEl.className = 'status';
+    });
+
+    audio.addEventListener('ended', () => {
+      nextTrack();
+      audio.play();
+    });
+
+    audio.addEventListener('timeupdate', () => {
+      const percentage = (audio.currentTime / audio.duration) * 100;
+      progressFill.style.width = percentage + '%';
+      currentTimeEl.textContent = formatTime(audio.currentTime);
+    });
+
+    audio.addEventListener('loadedmetadata', () => {
+      totalTimeEl.textContent = formatTime(audio.duration);
+      statusEl.textContent = '✅ Listo para reproducir';
+      statusEl.className = 'status';
+    });
+
+    audio.addEventListener('error', (e) => {
+      console.error('Audio error:', e);
+      statusEl.textContent = '❌ Error al cargar MP3';
+      statusEl.className = 'status error';
+    });
+
+    volumeSlider.addEventListener('input', (e) => {
+      audio.volume = e.target.value / 100;
+    });
+
+    function startVisualizer() {
+      visualizerInterval = setInterval(() => {
+        visualizerBars.forEach(bar => {
+          const height = Math.random() * 80 + 20;
+          bar.style.height = height + '%';
+        });
+      }, 150);
+    }
+
+    function stopVisualizer() {
+      clearInterval(visualizerInterval);
+      visualizerBars.forEach(bar => {
+        bar.style.height = '40%';
+      });
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        togglePlay();
+      } else if (e.code === 'ArrowRight') {
+        nextTrack();
+      } else if (e.code === 'ArrowLeft') {
+        previousTrack();
+      } else if (e.code === 'Escape') {
+        closeCV();
+        document.querySelectorAll('.error-popup').forEach(p => p.classList.remove('show'));
+      }
+    });
+
+    console.log('🎵 Portfolio listo!');
+    console.log('📄 CV tipo Windows + 🎵 Player + 💀 Error Popups');
+    // recien agregado
+    document.addEventListener('click', iniciarAudio);
+
+    function iniciarAudio() {
+    audio.play().then(() => {
+    statusEl.textContent = '🎵 Reproduciendo';
+    statusEl.className = 'status playing';
+    }).catch(err => console.log(err));
+
+    // Para que no se ejecute mil veces
+    document.removeEventListener('click', iniciarAudio);
+    }
+  </script>
+</body>
+</html>
+
