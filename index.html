@@ -678,11 +678,18 @@
 
     .error-popup .error-content {
       color: #00ff00;
+      overflow: hidden;
       font-size: 0.8rem;
       line-height: 1.6;
       font-family: 'Courier New', monospace;
     }
 
+    .error-image {
+    max-width: 100%;   /* nunca más grande que el contenedor */
+    height: auto;      /* mantiene proporción */
+    margin: 10px 0;
+    border-radius: 6px; /* opcional, se ve más pro */
+    }
     .error-popup .error-icon {
       font-size: 2rem;
       margin-bottom: 10px;
@@ -1121,21 +1128,12 @@
       <div class="error-title">⚠️ SYSTEM ERROR</div>
       <div class="error-close" onclick="closeError('errorPopup1')">✕</div>
     </div>
-    <div class="error-content">
-      <div class="error-icon">💀</div>
-       <img src="arte2.jpg" alt="Album Art" id="cdImage">
-      <p>Este programa ha efectuado una operación no válida y se cerrará.</p>
-      <p style="margin-top: 10px;">Si el problema persiste, consulte con su proveedor.</p>
-      <div class="error-code">
-        ERROR_CODE: 0x00000000<span class="blink-cursor">_</span>
-      </div>
-    </div>
        <div class="error-content">
       <div class="error-icon">já</div>
       <p>Este programa ha efectuado una operación no válida y se cerrará.</p>
       <p style="margin-top: 10px;">Si el problema persiste, consulte con su proveedor.</p>
       <div class="error-code">
-        ERROR_CODE: 0x00000000<span class="blink-cursor">_</span>
+        ERROR_CODE: 0x00000000666<span class="blink-cursor">_</span>
       </div>
     </div>
   </div>
@@ -1171,7 +1169,27 @@
       </div>
     </div>
   </div>
+<!-- Error 4: Blue Screen -->
+<div class="error-popup bsod-popup" id="errorPopup3">
+  <div class="error-header">
+    <div class="error-title">🖥️ FATAL ERROR</div>
+    <div class="error-close" onclick="closeError('errorPopup3')">✕</div>
+  </div>
 
+  <div class="error-content">
+    <div class="error-icon">☠️</div>
+
+    <!-- IMAGEN -->
+    <img src="arte2.jpg" class="error-image">
+
+    <p>A problem has been detected and Windows has been shut down.</p>
+    <p style="margin-top: 10px;">CRITICAL_PROCESS_DIED</p>
+
+    <div class="error-code">
+      Technical Information: *** STOP: 0x0000006F<span class="blink-cursor">▮</span>
+    </div>
+  </div>
+</div>
   <!-- Elemento de audio oculto -->
   <audio id="audioPlayer" preload="auto" crossorigin="anonymous"></audio>
 
